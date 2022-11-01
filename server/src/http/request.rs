@@ -1,7 +1,10 @@
 use super::method::Method;
 use std::convert::TryFrom;
+use std::str::Utf8Error;
 use std::error::Error;
 use std::fmt::{Result as FmtResult, Display, Formatter, Debug};
+use std::str;
+
 
 pub struct Request {
     path: String,
@@ -21,6 +24,16 @@ impl TryFrom<&[u8]> for Request {
         // let string = String::from("asd");
         // string.encrypt();
         // buf.encrypt();
+        // match str::from_utf8(buf) {
+        //     Ok(request) => {},
+        //     Err(_) => return Err(ParseError::InvalidEncoding),
+        // }
+        // match str::from_utf8(buf).or(Err(ParseError::InvalidEncoding)){
+        //     Ok(request) => {},
+        //     Err(e) => return Err(e),
+        // }
+
+        let request = str::from_utf8(buf)?;
 
         unimplemented!()
     }
@@ -34,7 +47,7 @@ pub enum ParseError {
 }
 
 impl ParseError {
-    fn message(self) -> &str {
+    fn message(&self) -> &str {
         match self {
             Self::InvalidRequest => "InvalidRequest",
             Self::InvalidEncoding => "InvalidEncoding",
@@ -44,17 +57,23 @@ impl ParseError {
     }
 }
 
+impl From<Utf8Error> for ParseError {
+    fn from(_: Utf8Error) -> Self {
+        Self::InvalidEncoding
+    }
+}
+
 impl Error for ParseError {}
 
 impl Display for ParseError {
-    fn try_from(&self, f: &mut Formatter) 
+    fn fmt(&self, f: &mut Formatter) 
     -> FmtResult {
         write!(f, "{}", self.message())
     }
 }
 
 impl Debug for ParseError {
-    fn try_from(&self, f: &mut Formatter) 
+    fn fmt(&self, f: &mut Formatter) 
     -> FmtResult {
         write!(f, "{}", self.message())
     }
