@@ -11,3 +11,5 @@ src\http\request.rs:
 src\http\method.rs:
 src\http\query_string.rs:
 src\website_handler.rs:
+
+# env-dep:CARGO_MANIFEST_DIR=C:\\Users\\Gabriel\\Desktop\\reposit\\rust\\server
